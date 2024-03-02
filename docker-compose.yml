@@ -1,0 +1,23 @@
+version: "1"
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    network_mode: bridge
+    #ports:
+      #- 8888:8888/tcp # HTTP proxy
+      #- 8388:8388/tcp # Shadowsocks
+      #- 8388:8388/udp # Shadowsocks
+      #- 8000:8000/tcp # Built-in HTTP control server
+    # command:
+    volumes:
+      - /media/carteSD/gluetun:/gluetun
+    environment:
+      # More variables are available, see the Wiki table
+      - VPNSP=mullvad
+      - VPN_TYPE=wireguard
+      - WIREGUARD_ADDRESS=wireguard_address
+      - WIREGUARD_PRIVATE_KEY=wireguard_private_key
+    restart: always
