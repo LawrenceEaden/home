@@ -21,6 +21,7 @@ services:
       - WIREGUARD_ADDRESSES=10.69.207.110/32
       - SERVER_CITIES=London
       - TZ=etc/UTC
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
