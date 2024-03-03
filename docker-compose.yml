@@ -1,23 +1,72 @@
-version: "1"
+version: '1.0'
 services:
-  gluetun:
-    image: qmcgaw/gluetun:latest
-    container_name: gluetun
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard
     cap_add:
       - NET_ADMIN
-    network_mode: bridge
-    #ports:
-      #- 8888:8888/tcp # HTTP proxy
-      #- 8388:8388/tcp # Shadowsocks
-      #- 8388:8388/udp # Shadowsocks
-      #- 8000:8000/tcp # Built-in HTTP control server
-    # command:
-    volumes:
-      - /media/carteSD/gluetun:/gluetun
+      - SYS_MODULE
     environment:
-      # More variables are available, see the Wiki table
-      - VPNSP=mullvad
-      - VPN_TYPE=wireguard
-      - WIREGUARD_ADDRESS=wireguard_address
-      - WIREGUARD_PRIVATE_KEY=wireguard_private_key
-    restart: always
+      - PUID=1001
+      - PGID=1001
+      - TZ=Etc/UTC
+    volumes:
+      - /mnt/sda1/docker/wireguard/config:/config
+      - /lib/modules:/lib/modules
+    network_mode: bridge
+#    ports:
+#      - 51820:51820/udp
+#      - 8080:8080  # qBittorrent WebUI
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /mnt/sda1/docker/qbittorrent/config:/config
+      - /mnt/sda1/downloads:/downloads
+    depends_on:
+      - wireguard
+    network_mode: "container:wireguard"  # Share network namespace with the wireguard container
+
+    restart: unless-stopped
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - VERSION=docker
+      # - PLEX_CLAIM= #optional
+    volumes:
+      - /mnt/sda1/docker/plex/library:/config
+      - /mnt/sda1/tv:/tv
+      - /mnt/sda1/movies:/movies
+    restart: unless-stopped
+    
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /mnt/sda1/docker/radarr:/config
+      - /mnt/sda1/movies:/movies #optional
+      - /mnt/sda1/downloads:/downloads #optional
+    ports:
+      - 7878:7878
+    restart: unless-stopped
