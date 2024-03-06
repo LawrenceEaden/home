@@ -1,31 +1,63 @@
 version: '1.1'
 services:
 
-#VPN
+# media server
+  plex:
+    container_name: plex
+    image: linuxserver/plex:latest
+    network_mode: host
+    ports:
+      - 32400:32400
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - VERSION=docker
+    volumes:
+      - /var/config/plex:/config
+      - /var/media/tv:/tv
+      - /var/media/movies:/movies
+      - /var/media/audiobooks:/audiobooks
+      - /var/config/xteve/config/data:/xml #XMLTV from Xteve
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://172.0.0.1:32400/identity > /dev/null || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
+
+# VPN
   gluetun:
-    image: qmcgaw/gluetun
+    image: qmcgaw/gluetun:latest
     container_name: gluetun
     cap_add:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8080:8080/tcp # qBittorrent
+      - 8080:8080 # qbittorrent webUI
+      - 6881:6881/tcp # qbittorrent torrent port tcp
+      - 6881:6881/udp # qbittorrent torrent port udp
+      - 7878:7878 # radarr
+      - 8989:8989 # sonarr
+      - 8787:8787 # Readarr
       - 34400:34400/tcp # xteve
     volumes:
       - /var/config/gluetun:/config
     environment:
-      - VPN_SERVICE_PROVIDER=mullvad
+      - VPNSP=mullvad
       - VPN_TYPE=openvpn
       - OPENVPN_USER=4379779465932262
-      - OPENVPN_PASSWORD=4379779465932262
       - OPENVPN_CIPHERS=AES-256-GCM
+      - OWNED=yes
+      - TZ=Europe/London
     restart: unless-stopped
     
-#Torrent Client
+# torrent client
   qbittorrent:
     image: linuxserver/qbittorrent:latest
-    network_mode: "service:gluetun"
+    network_mode: "service:gluetun" #VPN
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -38,70 +70,75 @@ services:
       - /var/tmp/downloads:/downloads
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs https://google.com || exit 1
+      test: curl -fSs http://172.0.0.1:8080 || exit 1
       start_period: 90s
       timeout: 10s
       interval: 5s
       retries: 3
-    # cpu_percent: 50
-    #mem_limit: 1500M
-    #mem_reservation: 1300M
 
-#Media Server
-  plex:
-    container_name: plex
-    image: linuxserver/plex:latest
+# movie collection manager
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr:latest
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - VERSION=docker
     volumes:
-      - /var/config/plex:/config
-      - /var/media/tv:/tv
+      - /var/config/radarr:/config
       - /var/media/movies:/movies
-    network_mode: host
-    ports:
-      - 32400:32400
+      - /var/tmp/downloads:/downloads
+    network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
-      test: curl -fsS http://localhost:32400/identity > /dev/null || exit 1
+      test: curl -fSs http://127.0.0.1:7878 || exit 1
       start_period: 60s
       timeout: 10s
       interval: 5s
       retries: 3
-    # cpu_percent: 50
-    #mem_limit: 1500M
-    #mem_reservation: 1300M
-    
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - /mnt/sda1/docker/radarr:/config
-      - /mnt/sda1/movies:/movies #optional
-      - /mnt/sda1/downloads:/downloads #optional
-    network_mode: "service:gluetun"
-    restart: unless-stopped
 
+# tv collection manager
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /mnt/sda1/docker/sonarr:/config
-      - /mnt/sda1/tv:/tv #optional
-      - /mnt/sda1/downloads:/downloads #optional
-    network_mode: "service:gluetun"
+      - /var/sonarr:/config
+      - /var/media/tv:/tv
+      - /var/tmp/downloads:/downloads
     restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://127.0.0.1:8989 || exit 1
+      timeout: 10s
+      interval: 5s
+      retries: 3
 
+# audiobooks collection manager
+  readarr:
+    container_name: readarr
+    image: linuxserver/readarr:nightly 
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /var/config/readarr:/config
+      - /var/media/audiobooks:/books
+      - /var/tmp/downloads:/downloads 
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://127.0.0.1:8787 || exit 1
+      start_period: 90s
+      timeout: 20s
+      interval: 20s
+      retries: 3
+
+#indexer manager
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
@@ -110,6 +147,52 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /path/to/data:/config
+      - /var/config/prowlarr:/config
     network_mode: "service:gluetun"
     restart: unless-stopped
+
+# IPTV tuner for Plex
+  xteve:
+    container_name: xteve
+    image: tnwhitwell/xteve:latest
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=etc/utc
+    volumes:
+      - /var/config/xteve:/home/xteve/conf
+      - /var/tmp/xteve:/tmp/xteve
+      - /var/config/xteve:/config
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://172.0.0.1:34400/web || exit 1
+      start_period: 180s
+      timeout: 10s
+      interval: 10s
+      retries: 3
+
+# local file sharing
+  samba:
+    container_name: samba
+    image: docker.io/servercontainers/samba:latest 
+    network_mode: host
+    ports:
+      - 445:445
+    environment:
+      ACCOUNT_username: password
+      UID_username: 1000
+      SAMBA_VOLUME_CONFIG_sharename: "[var]; path=/var; available = yes; browsable = yes; writable = no; read only = yes; force user = username; public = yes; guest ok = yes"
+    volumes:
+      - /var:/share/var
+    restart: unless-stopped
+
+# google drive backup
+  rclone:
+    image: rclone/rclone:latest
+    container_name: rclone_backup
+    restart: unless-stopped
+    volumes:
+      - ./rclone/config:/config/rclone
+    user: "${UID}:${GID}"
+    command: tail -f /dev/null
