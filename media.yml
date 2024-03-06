@@ -1,5 +1,7 @@
-version: '1.0'
+version: '1.1'
 services:
+
+#VPN
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
@@ -8,23 +10,22 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8080:8080 #qbittorrent
-      - 7878:7878 #radarr
-      - 8989:8989 #sonarr
-      - 9696:9696 #prowlarr
+      - 8080:8080/tcp # qBittorrent
+      - 34400:34400/tcp # xteve
     volumes:
-      - /mnt/sda1/docker/gluetun:/gluetun
+      - /var/config/gluetun:/config
     environment:
       - VPN_SERVICE_PROVIDER=mullvad
-      - VPN_TYPE=wireguard
-      - WIREGUARD_PRIVATE_KEY=AG5xsGonNI2IONzxZ+Un447vDkirtO2HZTrEdFjMe2c=
-      - WIREGUARD_ADDRESSES=10.69.207.110/32
-      - SERVER_CITIES=London
-      - TZ=etc/UTC
-      - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
-
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=4379779465932262
+      - OPENVPN_PASSWORD=4379779465932262
+      - OPENVPN_CIPHERS=AES-256-GCM
+    restart: unless-stopped
+    
+#Torrent Client
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: linuxserver/qbittorrent:latest
+    network_mode: "service:gluetun"
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -33,28 +34,45 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - /mnt/sda1/docker/qbittorrent/config:/config
-      - /mnt/sda1/downloads:/downloads
-    network_mode: "service:gluetun"
-
+      - /var/config/qbittorrent:/config
+      - /var/tmp/downloads:/downloads
     restart: unless-stopped
+    healthcheck:
+      test: curl -fSs https://google.com || exit 1
+      start_period: 90s
+      timeout: 10s
+      interval: 5s
+      retries: 3
+    # cpu_percent: 50
+    #mem_limit: 1500M
+    #mem_reservation: 1300M
 
+#Media Server
   plex:
-    image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    network_mode: host
+    image: linuxserver/plex:latest
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - VERSION=docker
     volumes:
-      - /mnt/sda1/docker/plex/library:/config
-      - /mnt/sda1/tv:/tv
-      - /mnt/sda1/movies:/movies
+      - /var/config/plex:/config
+      - /var/media/tv:/tv
+      - /var/media/movies:/movies
+    network_mode: host
     ports:
       - 32400:32400
     restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://localhost:32400/identity > /dev/null || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
+    # cpu_percent: 50
+    #mem_limit: 1500M
+    #mem_reservation: 1300M
     
   radarr:
     image: lscr.io/linuxserver/radarr:latest
