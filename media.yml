@@ -188,11 +188,19 @@ services:
     restart: unless-stopped
 
 # google drive backup
-  rclone:
-    image: rclone/rclone:latest
-    container_name: rclone_backup
-    restart: unless-stopped
+  duplicati:
+    container_name: duplicati
+    image: lscr.io/linuxserver/duplicati:latest
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      #- CLI_ARGS= #optional
     volumes:
-      - ./rclone/config:/config/rclone
-    user: "${UID}:${GID}"
-    command: tail -f /dev/null
+      - /var/config/duplicati:/config
+      - /path/to/backups:/backups
+      - /path/to/source:/source
+    ports:
+      - 8200:8200
+    restart: unless-stopped
