@@ -75,6 +75,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 # movie collection manager
   radarr:
@@ -96,6 +99,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 # tv collection manager
   sonarr:
@@ -116,6 +122,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 # audiobooks collection manager
   readarr:
@@ -137,6 +146,9 @@ services:
       timeout: 20s
       interval: 20s
       retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 #indexer manager
   prowlarr:
@@ -150,6 +162,9 @@ services:
       - /var/config/prowlarr:/config
     network_mode: "service:gluetun"
     restart: unless-stopped
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 # IPTV tuner for Plex
   xteve:
@@ -171,6 +186,9 @@ services:
       timeout: 10s
       interval: 10s
       retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
 
 # local file sharing
   samba:
@@ -203,4 +221,22 @@ services:
       - /var/config:/source
     ports:
       - 8200:8200
+    restart: unless-stopped
+
+# home automation
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/home-assistant:latest
+    network_mode: host
+    ports:
+      - 8123:8123
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /var/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    privileged: true
     restart: unless-stopped
