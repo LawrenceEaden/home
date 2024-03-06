@@ -199,8 +199,8 @@ services:
       #- CLI_ARGS= #optional
     volumes:
       - /var/config/duplicati:/config
-      - /path/to/backups:/backups
-      - /path/to/source:/source
+      - /var/backups:/backups
+      - /var/config:/source
     ports:
       - 8200:8200
     restart: unless-stopped
