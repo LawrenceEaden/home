@@ -206,7 +206,7 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_Lawrence: Lawrence
+      ACCOUNT_username: password
       UID_username: 1000
       #WSDD2_DISABLE: 1
 #      SAMBA_VOLUME_CONFIG_config: |
@@ -226,7 +226,7 @@ services:
          available = yes
          writable = yes
          public = yes
-         force user = Lawrence
+         force user = username
 #      SAMBA_VOLUME_CONFIG_opt: |
 #        [opt]
  #        path = /shares/opt
@@ -237,9 +237,9 @@ services:
     #     public = yes
     #     force user = Lawrence
     volumes:
-      - /var/config:/shares/config
+#      - /var/config:/shares/config
       - /var/media:/shares/media
-      - /opt:/shares/opt
+#      - /opt:/shares/opt
     restart: always
 #    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
 
