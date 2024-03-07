@@ -240,6 +240,12 @@ services:
     ports:
       - 8200:8200
     restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://127.0.0.1:8200 || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
 
 # home automation
   homeassistant:
