@@ -206,10 +206,17 @@ services:
     environment:
       ACCOUNT_username: password
       UID_username: 1000
-      SAMBA_VOLUME_CONFIG_sharename: "[var]; path=/var; available = yes; browsable = yes; writable = no; read only = yes; force user = username; public = yes; guest ok = yes"
+      SAMBA_VOLUME_CONFIG_sharename: |
+        [var]
+         path = /var
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
     volumes:
       - /var:/share/var
-    restart: unless-stopped
+    restart: always
 
 # google drive backup
   duplicati:
