@@ -184,6 +184,8 @@ services:
       - TZ=etc/utc
     volumes:
       - /var/config/threadfin:/home/threadfin
+      - /var/config/threadfin/conf:/home/threadfin/conf
+      - /var/tmp/threadfin:/tmp/threadfin
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:34400/web || exit 1
