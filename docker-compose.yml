@@ -204,18 +204,36 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_username: password
+      ACCOUNT_Lawrence: Lawrence
       UID_username: 1000
-      SAMBA_VOLUME_CONFIG_sharename: |
-        [var]
-         path = /shares/var
+      SAMBA_VOLUME_CONFIG_config: |
+        [config]
+         path = /shares/var/config
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
+      SAMBA_VOLUME_CONFIG_media: |
+        [media]
+         path = /shares/var/media
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
+      SAMBA_VOLUME_CONFIG_media: |
+        [opt]
+         path = /shares/opt
          guest ok = yes
          browseable = yes
          available = yes
          writable = yes
          public = yes
     volumes:
-      - /var:/shares/var
+      - /var/config:/shares/config
+      - /var/media:/shares/media
+      - /opt:/shares/opt
     restart: always
 
 # google drive backup
