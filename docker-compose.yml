@@ -218,28 +218,28 @@ services:
          writable = yes
          public = yes
          force user = username
-#      SAMBA_VOLUME_CONFIG_media: |
-#        [media]
-#         path = /var/media
-#         guest ok = yes
-#         browseable = yes
-#         available = yes
-#         writable = yes
-#         public = yes
-#         force user = username
-#      SAMBA_VOLUME_CONFIG_opt: |
-#        [opt]
-#         path = /shares/opt
-#         guest ok = yes
-#         browseable = yes
-#         available = yes
-#         writable = yes
-#         public = yes
-#         force user = username
+      SAMBA_VOLUME_CONFIG_media: |
+        [media]
+         path = /shares/media
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
+         force user = username
+      SAMBA_VOLUME_CONFIG_opt: |
+        [opt]
+         path = /shares/opt
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
+         force user = username
     volumes:
       - /var/config:/shares/config
- #     - /var/media:/shares/media
- #     - /opt:/shares/opt
+      - /var/media:/shares/media
+      - /opt:/shares/opt
     restart: always
 #    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
 
