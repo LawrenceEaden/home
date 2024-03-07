@@ -204,7 +204,7 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_Lawrence: Lawrence
+      ACCOUNT_username: password
       UID_username: 1000
       SAMBA_VOLUME_CONFIG_config: |
         [config]
@@ -222,7 +222,7 @@ services:
          available = yes
          writable = yes
          public = yes
-      SAMBA_VOLUME_CONFIG_media: |
+      SAMBA_VOLUME_CONFIG_opt: |
         [opt]
          path = /shares/opt
          guest ok = yes
