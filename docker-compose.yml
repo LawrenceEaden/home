@@ -18,7 +18,7 @@ services:
       - /var/media/tv:/tv
       - /var/media/movies:/movies
       - /var/media/audiobooks:/audiobooks
-      - /var/config/xteve/data:/xml #XMLTV from Xteve
+      - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     restart: unless-stopped
     healthcheck:
       test: curl -fsS http://127.0.0.1:32400/identity > /dev/null || exit 1
@@ -174,18 +174,16 @@ services:
         condition: service_healthy
 
 # IPTV tuner for Plex
-  xteve:
+  threadfin:
     container_name: xteve
-    image: tnwhitwell/xteve:latest
+    image: fyb3roptik/threadfin:latest
     network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=etc/utc
     volumes:
-      - /var/config/xteve:/home/xteve/conf
-      - /var/tmp/xteve:/tmp/xteve
-      - /var/config/xteve:/config
+      - /var/config/threadfin:/home/threadfin
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:34400/web || exit 1
