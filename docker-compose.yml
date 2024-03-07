@@ -209,24 +209,24 @@ services:
       ACCOUNT_username: password
       UID_username: 1000
       #WSDD2_DISABLE: 1
-#      SAMBA_VOLUME_CONFIG_config: |
-#        [config]
-#         path = /shares/config
-#         guest ok = yes
-#         browseable = yes
-#         available = yes
-#         writable = yes
-#         public = yes
-#         force user = Lawrence
-      SAMBA_VOLUME_CONFIG_media: |
-        [media]
-         path = /shares/media
+      SAMBA_VOLUME_CONFIG_config: |
+        [config]
+         path = /shares/config
          guest ok = yes
          browseable = yes
          available = yes
          writable = yes
          public = yes
          force user = username
+#      SAMBA_VOLUME_CONFIG_media: |
+#        [media]
+#         path = /shares/media
+#         guest ok = yes
+#         browseable = yes
+#         available = yes
+#         writable = yes
+#         public = yes
+#         force user = username
 #      SAMBA_VOLUME_CONFIG_opt: |
 #        [opt]
  #        path = /shares/opt
@@ -237,8 +237,8 @@ services:
     #     public = yes
     #     force user = Lawrence
     volumes:
-#      - /var/config:/shares/config
-      - /var/media:/shares/media
+      - /var/config:/shares/config
+#      - /var/media:/shares/media
 #      - /opt:/shares/opt
     restart: always
 #    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
