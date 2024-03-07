@@ -234,8 +234,8 @@ services:
 #         public = yes
     volumes:
       - /var/config:/shares/config
-      - /var/media:/shares/media
-      - /opt:/shares/opt
+#      - /var/media:/shares/media
+#      - /opt:/shares/opt
     restart: always
 
 # google drive backup
