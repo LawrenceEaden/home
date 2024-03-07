@@ -16,6 +16,7 @@ services:
     volumes:
       - /var/config/plex:/config
       - /var/media/tv:/tv
+      - /media:/oldmedia
       - /var/media/movies:/movies
       - /var/media/audiobooks:/audiobooks
       - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
