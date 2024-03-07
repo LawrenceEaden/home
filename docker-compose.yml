@@ -70,7 +70,7 @@ services:
       - /var/tmp/downloads:/downloads
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://172.0.0.1:8080 || exit 1
+      test: curl -fSs http://127.0.0.1:8080 || exit 1
       start_period: 90s
       timeout: 10s
       interval: 5s
