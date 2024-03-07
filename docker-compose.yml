@@ -52,6 +52,7 @@ services:
       - OPENVPN_USER=4379779465932262
       - OPENVPN_CIPHERS=AES-256-GCM
       - OWNED=yes
+      - SERVER_COUNTRIES=UK
       - TZ=Europe/London
     restart: unless-stopped
     
