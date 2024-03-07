@@ -18,7 +18,7 @@ services:
       - /var/media/tv:/tv
       - /var/media/movies:/movies
       - /var/media/audiobooks:/audiobooks
-      - /var/config/xteve/config/data:/xml #XMLTV from Xteve
+      - /var/config/xteve/data:/xml #XMLTV from Xteve
     restart: unless-stopped
     healthcheck:
       test: curl -fsS http://127.0.0.1:32400/identity > /dev/null || exit 1
