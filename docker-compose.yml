@@ -211,7 +211,7 @@ services:
       #WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
         [config]
-         path = /var/config
+         path = /shares/var/config
          guest ok = yes
          browseable = yes
          available = yes
@@ -220,7 +220,7 @@ services:
          force user = username
 #      SAMBA_VOLUME_CONFIG_media: |
 #        [media]
-#         path = /shares/var/media
+#         path = /var/media
 #         guest ok = yes
 #         browseable = yes
 #         available = yes
