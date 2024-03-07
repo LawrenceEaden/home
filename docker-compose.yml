@@ -241,6 +241,7 @@ services:
  #     - /var/media:/shares/media
  #     - /opt:/shares/opt
     restart: always
+    command: /bin/bash -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
 
 # google drive backup
   duplicati:
