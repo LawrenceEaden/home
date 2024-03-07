@@ -115,7 +115,7 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /var/sonarr:/config
+      - /var/config/sonarr:/config
       - /var/media/tv:/tv
       - /var/tmp/downloads:/downloads
     restart: unless-stopped
