@@ -200,6 +200,8 @@ services:
   samba:
     container_name: samba
     image: docker.io/servercontainers/samba:latest 
+    cap_add:
+      - CAP_NET_ADMIN
     network_mode: host
     ports:
       - 445:445
