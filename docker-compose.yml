@@ -41,7 +41,8 @@ services:
       - 6881:6881/udp # qbittorrent torrent port udp
       - 7878:7878 # radarr
       - 8989:8989 # sonarr
-      - 8787:8787 # Readarr
+      - 8787:8787 # readarr
+      - 9696:9696 # prowlarr
       - 34400:34400/tcp # xteve
     volumes:
       - /var/config/gluetun:/config
@@ -162,6 +163,11 @@ services:
       - /var/config/prowlarr:/config
     network_mode: "service:gluetun"
     restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://127.0.0.1:8989 || exit 1
+      timeout: 10s
+      interval: 5s
+      retries: 3
     depends_on:
       gluetun:
         condition: service_healthy
@@ -181,7 +187,7 @@ services:
       - /var/config/xteve:/config
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://172.0.0.1:34400/web || exit 1
+      test: curl -fSs http://127.0.0.1:34400/web || exit 1
       start_period: 180s
       timeout: 10s
       interval: 10s
