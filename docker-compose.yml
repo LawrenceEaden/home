@@ -178,11 +178,11 @@ services:
     container_name: threadfin
     image: fyb3roptik/threadfin:latest
     network_mode: "service:gluetun"
-    environment:
+#    environment:
 #      - PUID=1000
 #      - PGID=1000
 #      - TZ=etc/utc
-    volumes:
+#    volumes:
 #      - /var/config/threadfin/bin:/home/threadfin/bin
 #      - /var/config/threadfin/conf:/home/threadfin/conf
 #      - /var/config/threadfin:/home/threadfin
