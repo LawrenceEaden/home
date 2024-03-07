@@ -204,11 +204,10 @@ services:
       - CAP_NET_ADMIN
     network_mode: host
     ports:
-      - 446:445
+      - 445:445
     environment:
       ACCOUNT_username: password
       UID_username: 1000
-      #WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
         [shares]
          path = /shares
@@ -218,38 +217,11 @@ services:
          writable = yes
          public = yes
          force user = username
-#        [config]
-#         path = /shares/config
-#         guest ok = yes
-#         browseable = yes
-#         available = yes
-#         writable = yes
-#         public = yes
-#         force user = username
-#      SAMBA_VOLUME_CONFIG_media: |
-#        [media]
-#         path = /shares/media
-#         guest ok = yes
-#         browseable = yes
-#         available = yes
-#         writable = yes
-#         public = yes
-#         force user = username
-#      SAMBA_VOLUME_CONFIG_opt: |
-#        [opt]
- #        path = /shares/opt
-  #       guest ok = yes
-   #      browseable = yes
-    #     available = yes
-    #     writable = yes
-    #     public = yes
-    #     force user = Lawrence
     volumes:
       - /var/config:/shares/config
       - /var/media:/shares/media
       - /opt:/shares/opt
     restart: always
-#    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
 
 # google drive backup
   duplicati:
