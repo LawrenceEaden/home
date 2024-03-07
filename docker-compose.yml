@@ -175,7 +175,7 @@ services:
 
 # IPTV tuner for Plex
   threadfin:
-    container_name: xteve
+    container_name: threadfin
     image: fyb3roptik/threadfin:latest
     network_mode: "service:gluetun"
     environment:
