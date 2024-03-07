@@ -182,11 +182,11 @@ services:
 #      - PUID=1000
 #      - PGID=1000
 #      - TZ=etc/utc
-#    volumes:
+    volumes:
 #      - /var/config/threadfin/bin:/home/threadfin/bin
-#      - /var/config/threadfin/conf:/home/threadfin/conf
+      - /var/config/threadfin/conf:/home/threadfin/conf
 #      - /var/config/threadfin:/home/threadfin
-#      - /var/tmp/threadfin:/tmp/threadfin
+      - /var/tmp/threadfin:/tmp/threadfin
 #      - /var/config/threadfin/cache:/home/threadfin/cache
     restart: unless-stopped
     healthcheck:
