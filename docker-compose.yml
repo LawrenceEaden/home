@@ -259,8 +259,8 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      #- /var/config/homeassistant:/config
-      - /home/Lawrence/homeassistant:/config
+      - /var/config/homeassistant:/config
+      #- /home/Lawrence/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     privileged: true
