@@ -21,7 +21,7 @@ services:
       - /var/config/xteve/config/data:/xml #XMLTV from Xteve
     restart: unless-stopped
     healthcheck:
-      test: curl -fsS http://172.0.0.1:32400/identity > /dev/null || exit 1
+      test: curl -fsS http://127.0.0.1:32400/identity > /dev/null || exit 1
       start_period: 60s
       timeout: 10s
       interval: 5s
