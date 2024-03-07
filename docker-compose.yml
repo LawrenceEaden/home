@@ -218,28 +218,28 @@ services:
          writable = yes
          public = yes
          force user = Lawrence
-      SAMBA_VOLUME_CONFIG_media: |
-        [media]
-         path = /shares/var/media
-         guest ok = yes
-         browseable = yes
-         available = yes
-         writable = yes
-         public = yes
-         force user = Lawrence
-      SAMBA_VOLUME_CONFIG_opt: |
-        [opt]
-         path = /shares/opt
-         guest ok = yes
-         browseable = yes
-         available = yes
-         writable = yes
-         public = yes
-         force user = Lawrence
+#      SAMBA_VOLUME_CONFIG_media: |
+#        [media]
+#         path = /shares/var/media
+#         guest ok = yes
+#         browseable = yes
+#         available = yes
+#         writable = yes
+#         public = yes
+#         force user = Lawrence
+#      SAMBA_VOLUME_CONFIG_opt: |
+#        [opt]
+#         path = /shares/opt
+#         guest ok = yes
+#         browseable = yes
+#         available = yes
+#         writable = yes
+#         public = yes
+#         force user = Lawrence
     volumes:
       - /var/config:/shares/config
-      - /var/media:/shares/media
-      - /opt:/shares/opt
+ #     - /var/media:/shares/media
+ #     - /opt:/shares/opt
     restart: always
 
 # google drive backup
