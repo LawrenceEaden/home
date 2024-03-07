@@ -206,18 +206,18 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_Lawrence: Lawrence
+      ACCOUNT_username: password
       UID_username: 1000
       #WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
         [config]
-         path = /shares/var/config
+         path = /var/config
          guest ok = yes
          browseable = yes
          available = yes
          writable = yes
          public = yes
-         force user = Lawrence
+         force user = username
 #      SAMBA_VOLUME_CONFIG_media: |
 #        [media]
 #         path = /shares/var/media
@@ -226,7 +226,7 @@ services:
 #         available = yes
 #         writable = yes
 #         public = yes
-#         force user = Lawrence
+#         force user = username
 #      SAMBA_VOLUME_CONFIG_opt: |
 #        [opt]
 #         path = /shares/opt
@@ -235,13 +235,13 @@ services:
 #         available = yes
 #         writable = yes
 #         public = yes
-#         force user = Lawrence
+#         force user = username
     volumes:
       - /var/config:/shares/config
  #     - /var/media:/shares/media
  #     - /opt:/shares/opt
     restart: always
-    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
+#    command: sh -c "apt-get update && apt-get install -y libnss-mdns && exec smbd --foreground"
 
 # google drive backup
   duplicati:
