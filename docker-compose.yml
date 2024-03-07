@@ -183,9 +183,11 @@ services:
       - PGID=1000
       - TZ=etc/utc
     volumes:
-      - /var/config/threadfin:/home/threadfin
+      - /var/config/threadfin/bin:/home/threadfin/bin
       - /var/config/threadfin/conf:/home/threadfin/conf
+      - /var/config/threadfin:/home/threadfin
       - /var/tmp/threadfin:/tmp/threadfin
+      - /var/config/threadfin/cache:/home/threadfin/cache
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:34400/web || exit 1
