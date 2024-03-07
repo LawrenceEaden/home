@@ -208,14 +208,14 @@ services:
       UID_username: 1000
       SAMBA_VOLUME_CONFIG_sharename: |
         [var]
-         path = /all
+         path = /shares/var
          guest ok = yes
          browseable = yes
          available = yes
          writable = yes
          public = yes
     volumes:
-      - /:/share/all
+      - /var:/shares/var
     restart: always
 
 # google drive backup
