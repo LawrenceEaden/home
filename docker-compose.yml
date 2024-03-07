@@ -211,7 +211,7 @@ services:
       #WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
         [config]
-         path = /shares/var/config
+         path = /shares/config
          guest ok = yes
          browseable = yes
          available = yes
