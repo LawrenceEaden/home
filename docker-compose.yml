@@ -206,7 +206,7 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_username: password
+      ACCOUNT_Lawrence: Lawrence
       UID_username: 1000
       WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
