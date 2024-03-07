@@ -214,14 +214,14 @@ services:
          available = yes
          writable = yes
          public = yes
-      SAMBA_VOLUME_CONFIG_media: |
-        [media]
-         path = /shares/var/media
-         guest ok = yes
-         browseable = yes
-         available = yes
-         writable = yes
-         public = yes
+#      SAMBA_VOLUME_CONFIG_media: |
+#        [media]
+#         path = /shares/var/media
+#         guest ok = yes
+#         browseable = yes
+#         available = yes
+#         writable = yes
+#         public = yes
       SAMBA_VOLUME_CONFIG_opt: |
         [opt]
          path = /shares/opt
