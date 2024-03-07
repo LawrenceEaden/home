@@ -206,7 +206,7 @@ services:
     ports:
       - 445:445
     environment:
-      ACCOUNT_username: password
+      ACCOUNT_Lawrence: Lawrence
       UID_username: 1000
       #WSDD2_DISABLE: 1
       SAMBA_VOLUME_CONFIG_config: |
@@ -217,7 +217,7 @@ services:
          available = yes
          writable = yes
          public = yes
-         force user = username
+         force user = Lawrence
       SAMBA_VOLUME_CONFIG_media: |
         [media]
          path = /shares/media
@@ -226,7 +226,7 @@ services:
          available = yes
          writable = yes
          public = yes
-         force user = username
+         force user = Lawrence
       SAMBA_VOLUME_CONFIG_opt: |
         [opt]
          path = /shares/opt
@@ -235,7 +235,7 @@ services:
          available = yes
          writable = yes
          public = yes
-         force user = username
+         force user = Lawrence
     volumes:
       - /var/config:/shares/config
       - /var/media:/shares/media
