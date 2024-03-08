@@ -272,3 +272,22 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+      
+# audiobook server
+  audiobookshelf:
+    container_name: audiobookshelf    
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    network_mode: bridge
+    ports:
+      - 13378:80
+    volumes:
+      - /var/media/audiobooks:/audiobooks
+      - /var/media/podcasts:/podcasts
+      - /var/config/audiobookshelf:/config
+      - /var/config/audiobookshelf/metadata:/metadata
+    healthcheck:
+      test: curl -fsS http://127.0.0.1:80 || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
