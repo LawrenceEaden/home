@@ -189,9 +189,9 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:34400/web || exit 1
-      start_period: 180s
+      start_period: 420s
       timeout: 10s
-      interval: 10s
+      interval: 60s
       retries: 3
     depends_on:
       gluetun:
