@@ -72,7 +72,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /var/config/qbittorrent:/config
-      - /var/tmp/downloads:/downloads
+      - /var/media/downloads:/downloads
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8080 || exit 1
@@ -94,8 +94,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /var/media/movies:/movies
-      - /var/tmp/downloads:/downloads
+      - /var/media/:/media
     network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
@@ -119,8 +118,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/sonarr:/config
-      - /var/media/tv:/tv
-      - /var/tmp/downloads:/downloads
+      - /var/media/:/media
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8989 || exit 1
@@ -142,8 +140,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/readarr:/config
-      - /var/media/audiobooks:/books
-      - /var/tmp/downloads:/downloads 
+      - /var/media/:/media
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8787 || exit 1
