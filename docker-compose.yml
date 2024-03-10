@@ -94,7 +94,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /var/media/tv:/tv
+      - /media/movies:/movies
     #network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
