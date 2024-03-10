@@ -183,6 +183,7 @@ services:
       - "8191:8191"
     environment:
       - LOG_LEVEL=info
+    network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8191 || exit 1
