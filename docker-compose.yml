@@ -55,6 +55,7 @@ services:
       - OWNED=yes
       - SERVER_COUNTRIES=UK
       - TZ=Europe/London
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
     restart: unless-stopped
     
 # torrent client
@@ -167,6 +168,24 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:9696 || exit 1
+      timeout: 10s
+      interval: 5s
+      retries: 3
+    depends_on:
+      gluetun:
+        condition: service_healthy
+
+# indexer proxy
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    ports:
+      - "8191:8191"
+    environment:
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://127.0.0.1:8191 || exit 1
       timeout: 10s
       interval: 5s
       retries: 3
