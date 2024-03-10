@@ -94,8 +94,8 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /var/media/:/data
-    network_mode: "service:gluetun"
+      - /var/media/tv:/tv
+    #network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:7878 || exit 1
@@ -103,9 +103,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
+    #depends_on:
+    #  gluetun:
+    #    condition: service_healthy
 
 # tv collection manager
   sonarr:
