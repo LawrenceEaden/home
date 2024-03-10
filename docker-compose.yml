@@ -94,7 +94,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /var/media/:/media
+      - /var/media/:/data
     network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
@@ -118,7 +118,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/sonarr:/config
-      - /var/media/:/media
+      - /var/media/:/data
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8989 || exit 1
@@ -140,7 +140,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/readarr:/config
-      - /var/media/:/media
+      - /var/media/:/data
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8787 || exit 1
