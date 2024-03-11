@@ -281,3 +281,26 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+
+# dddns updater
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: duckdns
+    network_mode: host 
+    environment:
+      - PUID=1000 
+      - PGID=1000 
+      - TZ=Etc/UTC 
+      - SUBDOMAINS=eaden,lozflix
+      - TOKEN=05ac446b-de08-4d2e-89f1-4c0c85cdd59b
+      - UPDATE_IP=ipv4 
+      - LOG_FILE=true
+    volumes:
+      - /var/config/duckdns:/config 
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s4 https://icanhazip.com | grep -qF $(nslookup eaden.duckdns.org 8.8.8.8 | awk '/^Address: /{print $2}')"]
+      start_period: 60s
+      interval: 30s
+      timeout: 10s
+      retries: 3
