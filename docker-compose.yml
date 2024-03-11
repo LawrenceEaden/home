@@ -15,10 +15,9 @@ services:
       - VERSION=docker
     volumes:
       - /var/config/plex:/config
-      - /var/media/tv:/tv
-      - /media:/oldmedia
-      - /var/media/movies:/movies
-      - /var/media/audiobooks:/audiobooks
+      - /mnt/sdb1/media/tv:/tv
+      - /mnt/sdb1/media/movies:/movies
+      - /mnt/sdb1/media/audiobooks:/audiobooks
       - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     restart: unless-stopped
     healthcheck:
@@ -72,7 +71,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /var/config/qbittorrent:/config
-      - /var/media/downloads:/downloads
+      - /mnt/sdb1/torrents:/downloads
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8080 || exit 1
@@ -94,7 +93,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /media/movies:/movies
+      - /mnt/sdb1:/sdb1
     #network_mode: "service:gluetun"
     restart: unless-stopped
     healthcheck:
@@ -118,7 +117,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/sonarr:/config
-      - /var/media/:/data
+      - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8989 || exit 1
@@ -140,7 +139,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/readarr:/config
-      - /var/media/:/data
+      - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8787 || exit 1
@@ -236,8 +235,7 @@ services:
          force user = username
     volumes:
       - /var/config:/shares/config
-      - /var/media:/shares/media
-      - /opt:/shares/opt
+      - /mnt/sdb1:/shares/sdb1
     restart: always
 
 # home automation
@@ -253,7 +251,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       #- /var/config/homeassistant:/config
-      - /home/Lawrence/homeassistant:/config
+      - /var/config/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
     privileged: true
@@ -273,8 +271,8 @@ services:
     ports:
       - 13378:80
     volumes:
-      - /var/media/audiobooks:/audiobooks
-      - /var/media/podcasts:/podcasts
+      - /mnt/sdb1/media/audiobooks:/audiobooks
+      - /mnt/sdb1/media/podcasts:/podcasts
       - /var/config/audiobookshelf:/config
       - /var/config/audiobookshelf/metadata:/metadata
     healthcheck:
