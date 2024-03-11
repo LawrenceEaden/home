@@ -240,30 +240,6 @@ services:
       - /opt:/shares/opt
     restart: always
 
-# google drive backup
-  duplicati:
-    container_name: duplicati
-    image: lscr.io/linuxserver/duplicati:latest
-    network_mode: host
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      #- CLI_ARGS= #optional
-    volumes:
-      - /var/config/duplicati:/config
-      - /var/backups:/backups
-      - /var/config:/source
-    ports:
-      - 8200:8200
-    restart: unless-stopped
-    healthcheck:
-      test: curl -fsS http://127.0.0.1:8200 || exit 1
-      start_period: 60s
-      timeout: 10s
-      interval: 5s
-      retries: 3
-
 # home automation
   homeassistant:
     container_name: homeassistant
