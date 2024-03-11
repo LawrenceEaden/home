@@ -71,7 +71,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /var/config/qbittorrent:/config
-      - /mnt/sdb1/torrents:/downloads
+      - /mnt/sdb1/downloads:/sdb1/downloads
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8080 || exit 1
