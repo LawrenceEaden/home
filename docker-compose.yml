@@ -19,7 +19,7 @@ services:
       - 9696:9696 # prowlarr
       - 34400:34400/tcp # xteve
       - 8191:8191 #flaresolverr
-      - 445:445 #samba
+      #- 445:445 #samba
       - 8123:8123 #homeassistant
       - 13378:80 #audiobookshelf
     volumes:
@@ -218,9 +218,9 @@ services:
     image: docker.io/servercontainers/samba:latest 
     cap_add:
       - CAP_NET_ADMIN
-    network_mode: "service:tailscale" #VPN
-    #ports:
-    #  - 445:445
+    network_mode: host
+    ports:
+      - 445:445
     environment:
       ACCOUNT_username: password
       UID_username: 1000
