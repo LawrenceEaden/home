@@ -19,6 +19,9 @@ services:
       - 9696:9696 # prowlarr
       - 34400:34400/tcp # xteve
       - 8191:8191 #flaresolverr
+      - 445:445 #samba
+      - 8123:8123 #homeassistant
+      - 13378:80 #audiobookshelf
     volumes:
       - /var/config/gluetun:/config
     environment:
@@ -96,9 +99,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # movie collection manager
   radarr:
@@ -119,9 +119,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # tv collection manager
   sonarr:
@@ -141,9 +138,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # audiobooks collection manager
   readarr:
@@ -164,9 +158,7 @@ services:
       timeout: 20s
       interval: 20s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
+
 
 #indexer manager
   prowlarr:
@@ -185,9 +177,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # indexer proxy
   flaresolverr:
@@ -202,9 +191,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # IPTV tuner for Plex
   threadfin:
@@ -225,9 +211,6 @@ services:
       timeout: 10s
       interval: 60s
       retries: 3
-    depends_on:
-      gluetun:
-        condition: service_healthy
 
 # local file sharing
   samba:
@@ -236,8 +219,8 @@ services:
     cap_add:
       - CAP_NET_ADMIN
     network_mode: "service:tailscale" #VPN
-    ports:
-      - 445:445
+    #ports:
+    #  - 445:445
     environment:
       ACCOUNT_username: password
       UID_username: 1000
@@ -260,8 +243,8 @@ services:
     container_name: homeassistant
     image: homeassistant/home-assistant:latest
     network_mode: "service:tailscale" #VPN
-    ports:
-      - 8123:8123
+    #ports:
+    #  - 8123:8123
     environment:
       - PUID=1000
       - PGID=1000
@@ -285,8 +268,8 @@ services:
     container_name: audiobookshelf    
     image: ghcr.io/advplyr/audiobookshelf:latest
     network_mode: "service:tailscale" #VPN
-    ports:
-      - 13378:80
+    #ports:
+    #  - 13378:80
     volumes:
       - /mnt/sdb1/media/audiobooks:/audiobooks
       - /mnt/sdb1/media/podcasts:/podcasts
