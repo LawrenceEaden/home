@@ -94,7 +94,7 @@ services:
       - /mnt/sdb1/downloads:/sdb1/downloads
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:8080 || exit 1
+      test: curl -fSs http://localhost:8080 || exit 1
       start_period: 90s
       timeout: 10s
       interval: 5s
@@ -114,7 +114,7 @@ services:
     network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:7878 || exit 1
+      test: curl -fSs http://localhost:7878 || exit 1
       start_period: 60s
       timeout: 10s
       interval: 5s
@@ -134,7 +134,7 @@ services:
       - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:8989 || exit 1
+      test: curl -fSs http://localhost1:8989 || exit 1
       timeout: 10s
       interval: 5s
       retries: 3
@@ -153,7 +153,7 @@ services:
       - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:8787 || exit 1
+      test: curl -fSs http://localhost:8787 || exit 1
       start_period: 90s
       timeout: 20s
       interval: 20s
@@ -173,7 +173,7 @@ services:
     network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:9696 || exit 1
+      test: curl -fSs http://localhost:9696 || exit 1
       timeout: 10s
       interval: 5s
       retries: 3
@@ -187,7 +187,7 @@ services:
     network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:8191 || exit 1
+      test: curl -fSs http://localhost:8191 || exit 1
       timeout: 10s
       interval: 5s
       retries: 3
@@ -206,7 +206,7 @@ services:
       - /var/tmp/threadfin:/tmp/threadfin
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://127.0.0.1:34400/web || exit 1
+      test: curl -fSs http://localhost:34400/web || exit 1
       start_period: 420s
       timeout: 10s
       interval: 60s
@@ -275,7 +275,7 @@ services:
       - /var/config/audiobookshelf:/config
       - /var/config/audiobookshelf/metadata:/metadata
     healthcheck:
-      test: curl -fsS http://127.0.0.1:80 || exit 1
+      test: curl -fsS http://localhost:80 || exit 1
       start_period: 60s
       timeout: 10s
       interval: 5s
