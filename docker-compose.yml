@@ -1,28 +1,6 @@
 version: '1.1'
 services:
 
-# media server
-  jellyfin:
-      container_name: jellyfin
-      image: lscr.io/linuxserver/jellyfin:latest
-      network_mode: host
-      restart: unless-stopped
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=etc/utc
-      volumes:
-        - /var/config/jellyfin:/config
-        - /mnt/sdb1/media/movies:/movies
-        - /mnt/sdb1/media/tv:/tv
-        - /mnt/sdb1/media/dvr:/dvr
-        - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
-      healthcheck:
-            test: curl -fsS curl -i http://localhost:8096/health || exit 1
-            start_period: 60s
-            timeout: 10s
-            interval: 5s
-            retries: 3
 # VPN
   gluetun:
     image: qmcgaw/gluetun:latest
@@ -73,6 +51,30 @@ services:
         - net_raw
         - sys_module
       restart: unless-stopped
+
+# media server
+  jellyfin:
+      container_name: jellyfin
+      image: lscr.io/linuxserver/jellyfin:latest
+      network_mode: "service:tailscale" #VPN
+      restart: unless-stopped
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=etc/utc
+      volumes:
+        - /var/config/jellyfin:/config
+        - /mnt/sdb1/media/movies:/movies
+        - /mnt/sdb1/media/tv:/tv
+        - /mnt/sdb1/media/dvr:/dvr
+        - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
+      healthcheck:
+            test: curl -fsS curl -i http://localhost:8096/health || exit 1
+            start_period: 60s
+            timeout: 10s
+            interval: 5s
+            retries: 3
+            
 # torrent client
   qbittorrent:
     image: linuxserver/qbittorrent:latest
@@ -109,7 +111,7 @@ services:
     volumes:
       - /var/config/radarr:/config
       - /mnt/sdb1:/sdb1
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:7878 || exit 1
@@ -125,7 +127,7 @@ services:
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     environment:
       - PUID=1000
       - PGID=1000
@@ -147,7 +149,7 @@ services:
   readarr:
     container_name: readarr
     image: linuxserver/readarr:nightly 
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     environment:
       - PUID=1000
       - PGID=1000
@@ -176,7 +178,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/prowlarr:/config
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:9696 || exit 1
@@ -193,7 +195,7 @@ services:
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=info
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:8191 || exit 1
@@ -208,7 +210,7 @@ services:
   threadfin:
     container_name: threadfin
     image: fyb3roptik/threadfin:latest
-    network_mode: "service:gluetun"
+    network_mode: "service:tailscale" #VPN
     environment:
       - PUID=1000
       - PGID=1000
@@ -233,7 +235,7 @@ services:
     image: docker.io/servercontainers/samba:latest 
     cap_add:
       - CAP_NET_ADMIN
-    network_mode: host
+    network_mode: "service:tailscale" #VPN
     ports:
       - 445:445
     environment:
@@ -257,7 +259,7 @@ services:
   homeassistant:
     container_name: homeassistant
     image: homeassistant/home-assistant:latest
-    network_mode: host
+    network_mode: "service:tailscale" #VPN
     ports:
       - 8123:8123
     environment:
@@ -282,7 +284,7 @@ services:
   audiobookshelf:
     container_name: audiobookshelf    
     image: ghcr.io/advplyr/audiobookshelf:latest
-    network_mode: bridge
+    network_mode: "service:tailscale" #VPN
     ports:
       - 13378:80
     volumes:
@@ -295,27 +297,4 @@ services:
       start_period: 60s
       timeout: 10s
       interval: 5s
-      retries: 3
-
-# dddns updater
-  duckdns:
-    image: lscr.io/linuxserver/duckdns:latest
-    container_name: duckdns
-    network_mode: host 
-    environment:
-      - PUID=1000 
-      - PGID=1000 
-      - TZ=Etc/UTC 
-      - SUBDOMAINS=eaden,lozflix
-      - TOKEN=05ac446b-de08-4d2e-89f1-4c0c85cdd59b
-      - UPDATE_IP=ipv4 
-      - LOG_FILE=true
-    volumes:
-      - /var/config/duckdns:/config 
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s4 https://icanhazip.com | grep -qF $(nslookup eaden.duckdns.org 8.8.8.8 | awk '/^Address: /{print $2}')"]
-      start_period: 60s
-      interval: 30s
-      timeout: 10s
       retries: 3
