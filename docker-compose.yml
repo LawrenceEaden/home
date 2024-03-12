@@ -20,8 +20,8 @@ services:
       - 34400:34400/tcp # xteve
       - 8191:8191 #flaresolverr
       #- 445:445 #samba
-      - 8123:8123 #homeassistant
-      - 13378:80 #audiobookshelf
+      #- 8123:8123 #homeassistant
+      #- 13378:80 #audiobookshelf
     volumes:
       - /var/config/gluetun:/config
     environment:
@@ -37,46 +37,46 @@ services:
 
 # reverse proxy
   tailscale:
-      image: tailscale/tailscale:latest
-      container_name: tailscale
-      network_mode: "service:gluetun" #VPN
-      environment:
-        - TS_AUTHKEY=tskey-client-kLvpKstMQV11CNTRL-MPaCiyoSBkJwyjL4Ebc8kJ3zc2p1YeuaW
-        - TS_EXTRA_ARGS=--advertise-tags=tag:container
-        - TS_STATE_DIR=/var/lib/tailscale
-        - TS_HOSTNAME=plexpi
-        #- TS_NO_LOGS_NO_SUPPORT=true
-      volumes:
-        - /var/config/tailscale:/var/lib/tailscale
-        - /dev/net/tun:/dev/net/tun
-      cap_add:
-        - net_admin
-        - net_raw
-        - sys_module
-      restart: unless-stopped
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    network_mode: "service:gluetun" #VPN
+    environment:
+      - TS_AUTHKEY=tskey-client-kLvpKstMQV11CNTRL-MPaCiyoSBkJwyjL4Ebc8kJ3zc2p1YeuaW
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_HOSTNAME=plexpi
+      #- TS_NO_LOGS_NO_SUPPORT=true
+    volumes:
+      - /var/config/tailscale:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+      - net_raw
+      - sys_module
+    restart: unless-stopped
 
 # media server
   jellyfin:
-      container_name: jellyfin
-      image: lscr.io/linuxserver/jellyfin:latest
-      network_mode: "service:tailscale" #VPN
-      restart: unless-stopped
-      environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ=etc/utc
-      volumes:
-        - /var/config/jellyfin:/config
-        - /mnt/sdb1/media/movies:/movies
-        - /mnt/sdb1/media/tv:/tv
-        - /mnt/sdb1/media/dvr:/dvr
-        - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
-      healthcheck:
-            test: curl -fsS curl -i http://localhost:8096/health || exit 1
-            start_period: 60s
-            timeout: 10s
-            interval: 5s
-            retries: 3
+    container_name: jellyfin
+    image: lscr.io/linuxserver/jellyfin:latest
+    network_mode: "service:tailscale" #VPN     
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=etc/utc
+    volumes:
+      - /var/config/jellyfin:/config
+      - /mnt/sdb1/media/movies:/movies
+      - /mnt/sdb1/media/tv:/tv
+      - /mnt/sdb1/media/dvr:/dvr
+      - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
+    healthcheck:
+          test: curl -fsS curl -i http://localhost:8096/health || exit 1
+          start_period: 60s
+          timeout: 10s
+          interval: 5s
+          retries: 3
             
 # torrent client
   qbittorrent:
@@ -111,7 +111,8 @@ services:
     volumes:
       - /var/config/radarr:/config
       - /mnt/sdb1:/sdb1
-    network_mode: "service:tailscale" #VPN
+    #network_mode: "service:tailscale" #VPN
+    network_mode: host
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:7878 || exit 1
