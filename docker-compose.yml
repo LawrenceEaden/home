@@ -2,31 +2,27 @@ version: '1.1'
 services:
 
 # media server
-  plex:
-    container_name: plex
-    image: linuxserver/plex:latest
-    network_mode: host
-    ports:
-      - 32400:32400
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      - VERSION=docker
-    volumes:
-      - /var/config/plex:/config
-      - /mnt/sdb1/media/tv:/tv
-      - /mnt/sdb1/media/movies:/movies
-      - /mnt/sdb1/media/audiobooks:/audiobooks
-      - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
-    restart: unless-stopped
-    healthcheck:
-      test: curl -fsS http://127.0.0.1:32400/identity > /dev/null || exit 1
-      start_period: 60s
-      timeout: 10s
-      interval: 5s
-      retries: 3
-
+  jellyfin:
+      container_name: jellyfin
+      image: lscr.io/linuxserver/jellyfin:latest
+      network_mode: host
+      restart: unless-stopped
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=etc/utc
+      volumes:
+        - /var/config/jellyfin:/config
+        - /mnt/sdb1/media/movies:/movies
+        - /mnt/sdb1/media/tv:/tv
+        - /mnt/sdb1/media/dvr:/dvr
+        - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
+      healthcheck:
+            test: curl -fsS curl -i http://localhost:8096/health || exit 1
+            start_period: 60s
+            timeout: 10s
+            interval: 5s
+            retries: 3
 # VPN
   gluetun:
     image: qmcgaw/gluetun:latest
