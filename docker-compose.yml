@@ -111,8 +111,7 @@ services:
     volumes:
       - /var/config/radarr:/config
       - /mnt/sdb1:/sdb1
-    #network_mode: "service:tailscale" #VPN
-    network_mode: host
+    network_mode: "service:tailscale" #VPN
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://127.0.0.1:7878 || exit 1
