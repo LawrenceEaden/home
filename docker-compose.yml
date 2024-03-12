@@ -141,7 +141,7 @@ services:
       - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost1:8989 || exit 1
+      test: curl -fSs http://localhost:8989 || exit 1
       timeout: 10s
       interval: 5s
       retries: 3
