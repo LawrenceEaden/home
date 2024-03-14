@@ -252,12 +252,7 @@ services:
       - /var/config:/shares/config
       - /var/media:/shares/media
     restart: always
-    healthcheck:
-      test: ["CMD", "smbclient", "-L", "localhost", "-U", "guest", "-m", "NT1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
+    
 # home automation
   homeassistant:
     container_name: homeassistant
