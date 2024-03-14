@@ -62,7 +62,7 @@ services:
     network_mode: "service:tailscale"
     environment:
       ACCOUNT_Lawrence: spicysamba1234
-      UID_username: 1000
+      UID_Lawrence: 1000
       SAMBA_VOLUME_CONFIG_config: |
         [shares]
          path = /shares
