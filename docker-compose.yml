@@ -34,7 +34,7 @@ services:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_HOSTNAME=plexpi
       - TS_ROUTES=192.168.1.0/24
-      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes 
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes --ssh
 #      - TS_NO_LOGS_NO_SUPPORT=true
     volumes:
       - /var/config/tailscale:/var/lib/tailscale
@@ -74,7 +74,7 @@ services:
          force user = username
     volumes:
       - /var/config:/shares/config
-      - /var/media:/shares/media
+      - /mnt/sdb1/media:/shares/media
 
 # media server
   jellyfin:
