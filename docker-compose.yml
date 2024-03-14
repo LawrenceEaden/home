@@ -228,3 +228,54 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+
+# local file sharing
+  samba:
+    container_name: samba
+    image: docker.io/servercontainers/samba:latest 
+    cap_add:
+      - CAP_NET_ADMIN
+    network_mode: "service:tailscale" #VPN  
+    environment:
+      ACCOUNT_username: password
+      UID_username: 1000
+      SAMBA_VOLUME_CONFIG_config: |
+        [shares]
+         path = /shares
+         guest ok = yes
+         browseable = yes
+         available = yes
+         writable = yes
+         public = yes
+         force user = username
+    volumes:
+      - /var/config:/shares/config
+      - /var/media:/shares/media
+    restart: always
+    healthcheck:
+      test: ["CMD", "smbclient", "-L", "localhost", "-U", "guest", "-m", "NT1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# home automation
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/home-assistant:latest
+    network_mode: "service:tailscale" #VPN  
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /var/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    privileged: true
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://127.0.0.1:8123 || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
