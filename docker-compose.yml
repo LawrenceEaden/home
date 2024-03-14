@@ -61,7 +61,7 @@ services:
       - CAP_NET_ADMIN
     network_mode: "service:tailscale"
     environment:
-      ACCOUNT_username: password
+      ACCOUNT_Lawrence: spicysamba1234
       UID_username: 1000
       SAMBA_VOLUME_CONFIG_config: |
         [shares]
@@ -71,8 +71,9 @@ services:
          available = yes
          writable = yes
          public = yes
-         force user = username
-         write list = username
+         read only = no
+         create mask = 666
+         directory mask = 777
     volumes:
       - /var/config:/shares/config
       - /mnt/sdb1/media:/shares/media
