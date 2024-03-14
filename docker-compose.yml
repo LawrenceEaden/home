@@ -60,8 +60,6 @@ services:
     cap_add:
       - CAP_NET_ADMIN
     network_mode: "service:tailscale"
-#    ports:
-#      - 455:455
     environment:
       ACCOUNT_username: password
       UID_username: 1000
