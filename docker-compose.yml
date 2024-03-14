@@ -44,6 +44,11 @@ services:
       - net_raw
       - sys_module
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "tailscale status"]
+      interval: 1s
+      timeout: 5s
+      retries: 60
     depends_on:
       gluetun:
         condition: service_healthy
