@@ -1,6 +1,7 @@
-version: '1.1'
+version: '2.0'
 services:
-  # VPN
+
+# VPN
   gluetun:
     image: qmcgaw/gluetun:latest
     container_name: gluetun
@@ -8,16 +9,6 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
-    ports:
-      - 8080:8080 # qbittorrent webUI
-      - 6881:6881/tcp # qbittorrent torrent port tcp
-      - 6881:6881/udp # qbittorrent torrent port udp
-      - 7878:7878 # radarr
-      - 8989:8989 # sonarr
-      - 8787:8787 # readarr
-      - 9696:9696 # prowlarr
-      - 34400:34400/tcp # xteve
-      - 8191:8191 # flaresolverr
     volumes:
       - /var/config/gluetun:/config
     environment:
@@ -31,16 +22,20 @@ services:
       - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
     restart: unless-stopped
 
-  # reverse proxy
+# reverse proxy
   tailscale:
     image: tailscale/tailscale:latest
     container_name: tailscale
-    network_mode: "service:gluetun" # VPN
+    network_mode: "service:gluetun" #VPN
     environment:
-      - TS_AUTHKEY=tskey-client-kLvpKstMQV11CNTRL-MPaCiyoSBkJwyjL4Ebc8kJ3zc2p1YeuaW
-      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_AUTHKEY=tskey-client-kLvpKstMQV11CNTRL-MPaCiyoSBkJwyjL4Ebc8kJ3zc2p1YeuaW?ephemeral=false
+      - TS_AUTH_ONCE=true
+      - TS_ACCEPT_DNS=true
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_HOSTNAME=plexpi
+      - TS_ROUTES=192.168.1.0/24
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes 
+#      - TS_NO_LOGS_NO_SUPPORT=true
     volumes:
       - /var/config/tailscale:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
@@ -53,11 +48,11 @@ services:
       gluetun:
         condition: service_healthy
 
-  # media server
+# media server
   jellyfin:
     container_name: jellyfin
     image: lscr.io/linuxserver/jellyfin:latest
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN    
     restart: unless-stopped
     environment:
       - PUID=1000
@@ -68,21 +63,18 @@ services:
       - /mnt/sdb1/media/movies:/movies
       - /mnt/sdb1/media/tv:/tv
       - /mnt/sdb1/media/dvr:/dvr
-      - /var/config/threadfin/conf/data:/xml # XMLTV from Xteve
+      - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     healthcheck:
-      test: curl -fsS curl -i http://localhost:8096/health || exit 1
-      start_period: 60s
-      timeout: 10s
-      interval: 5s
-      retries: 3
-    depends_on:
-      tailscale:
-        condition: service_healthy
-
-  # torrent client
+          test: curl -fsS curl -i http://localhost:8096/health || exit 1
+          start_period: 60s
+          timeout: 10s
+          interval: 5s
+          retries: 3
+            
+# torrent client
   qbittorrent:
     image: linuxserver/qbittorrent:latest
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN 
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -100,11 +92,8 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      tailscale:
-        condition: service_healthy
 
-  # movie collection manager
+# movie collection manager
   radarr:
     container_name: radarr
     image: linuxserver/radarr:latest
@@ -115,7 +104,7 @@ services:
     volumes:
       - /var/config/radarr:/config
       - /mnt/sdb1:/sdb1
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN 
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:7878 || exit 1
@@ -123,15 +112,12 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      tailscale:
-        condition: service_healthy
 
-  # tv collection manager
+# tv collection manager
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN 
     environment:
       - PUID=1000
       - PGID=1000
@@ -145,15 +131,12 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
-    depends_on:
-      tailscale:
-        condition: service_healthy
 
-  # audiobooks collection manager
+# audiobooks collection manager
   readarr:
     container_name: readarr
     image: linuxserver/readarr:nightly 
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN 
     environment:
       - PUID=1000
       - PGID=1000
@@ -168,11 +151,9 @@ services:
       timeout: 20s
       interval: 20s
       retries: 3
-    depends_on:
-      tailscale:
-        condition: service_healthy
 
-  # indexer manager
+
+#indexer manager
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
@@ -182,7 +163,63 @@ services:
       - TZ=Etc/UTC
     volumes:
       - /var/config/prowlarr:/config
-    network_mode: "service:tailscale" # VPN
+    network_mode: "container:tailscale" #VPN 
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://
+      test: curl -fSs http://localhost:9696 || exit 1
+      timeout: 10s
+      interval: 5s
+      retries: 3
+
+# indexer proxy
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+    network_mode: "container:tailscale" #VPN 
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://localhost:8191 || exit 1
+      timeout: 10s
+      interval: 5s
+      retries: 3
+
+# IPTV tuner for Plex
+  threadfin:
+    container_name: threadfin
+    image: fyb3roptik/threadfin:latest
+    network_mode: "container:tailscale" #VPN 
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=etc/utc
+    volumes:
+      - /var/config/threadfin/conf:/home/threadfin/conf
+      - /var/tmp/threadfin:/tmp/threadfin
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fSs http://localhost:34400/web || exit 1
+      start_period: 420s
+      timeout: 10s
+      interval: 60s
+      retries: 3
+
+# audiobook server
+  audiobookshelf:
+    container_name: audiobookshelf    
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    network_mode: "container:tailscale" #VPN 
+    #ports:
+    #  - 13378:80
+    volumes:
+      - /mnt/sdb1/media/audiobooks:/audiobooks
+      - /mnt/sdb1/media/podcasts:/podcasts
+      - /var/config/audiobookshelf:/config
+      - /var/config/audiobookshelf/metadata:/metadata
+    healthcheck:
+      test: curl -fsS http://localhost:80 || exit 1
+      start_period: 60s
+      timeout: 10s
+      interval: 5s
+      retries: 3
