@@ -72,6 +72,7 @@ services:
          writable = yes
          public = yes
          force user = username
+         write list = username
     volumes:
       - /var/config:/shares/config
       - /mnt/sdb1/media:/shares/media
