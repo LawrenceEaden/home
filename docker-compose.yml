@@ -54,12 +54,12 @@ services:
         condition: service_healthy
 
 # local file sharing
- samba:
+  samba:
     container_name: samba
     image: docker.io/servercontainers/samba:latest 
     cap_add:
       - CAP_NET_ADMIN
-    network_mode: "container:tailscale"
+    network_mode: "service:tailscale"
 #    ports:
 #      - 455:455
     environment:
