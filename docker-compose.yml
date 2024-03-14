@@ -52,7 +52,7 @@ services:
   jellyfin:
     container_name: jellyfin
     image: lscr.io/linuxserver/jellyfin:latest
-    network_mode: "container:tailscale" #VPN    
+    network_mode: "service:tailscale" #VPN    
     restart: unless-stopped
     environment:
       - PUID=1000
@@ -74,7 +74,7 @@ services:
 # torrent client
   qbittorrent:
     image: linuxserver/qbittorrent:latest
-    network_mode: "container:tailscale" #VPN 
+    network_mode: "service:tailscale" #VPN   
     container_name: qbittorrent
     environment:
       - PUID=1000
@@ -97,14 +97,14 @@ services:
   radarr:
     container_name: radarr
     image: linuxserver/radarr:latest
+    network_mode: "service:tailscale" #VPN  
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
       - /var/config/radarr:/config
-      - /mnt/sdb1:/sdb1
-    network_mode: "container:tailscale" #VPN 
+      - /mnt/sdb1:/sdb1 
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:7878 || exit 1
@@ -117,7 +117,7 @@ services:
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:latest
-    network_mode: "container:tailscale" #VPN 
+    network_mode: "service:tailscale" #VPN  
     environment:
       - PUID=1000
       - PGID=1000
@@ -136,7 +136,7 @@ services:
   readarr:
     container_name: readarr
     image: linuxserver/readarr:nightly 
-    network_mode: "container:tailscale" #VPN 
+    network_mode: "service:tailscale" #VPN   
     environment:
       - PUID=1000
       - PGID=1000
@@ -157,13 +157,13 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    network_mode: "service:tailscale" #VPN  
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
       - /var/config/prowlarr:/config
-    network_mode: "container:tailscale" #VPN 
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:9696 || exit 1
@@ -175,9 +175,9 @@ services:
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
+    network_mode: "service:tailscale" #VPN  
     environment:
       - LOG_LEVEL=info
-    network_mode: "container:tailscale" #VPN 
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8191 || exit 1
@@ -189,7 +189,7 @@ services:
   threadfin:
     container_name: threadfin
     image: fyb3roptik/threadfin:latest
-    network_mode: "container:tailscale" #VPN 
+    network_mode: "service:tailscale" #VPN   
     environment:
       - PUID=1000
       - PGID=1000
@@ -209,7 +209,7 @@ services:
   audiobookshelf:
     container_name: audiobookshelf    
     image: ghcr.io/advplyr/audiobookshelf:latest
-    network_mode: "container:tailscale" #VPN 
+    network_mode: "service:tailscale" #VPN  
     #ports:
     #  - 13378:80
     volumes:
