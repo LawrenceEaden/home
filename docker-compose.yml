@@ -97,7 +97,7 @@ services:
       - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     healthcheck:
           test: curl -fsS curl -i http://localhost:8096/health || exit 1
-          start_period: 60s
+          start_period: 120s
           timeout: 60s
           interval: 5s
           retries: 3
