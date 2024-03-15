@@ -34,7 +34,7 @@ services:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_HOSTNAME=plexpi
       - TS_ROUTES=192.168.1.0/24
-      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes --ssh
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes --ssh --advertise-exit-node
 #      - TS_NO_LOGS_NO_SUPPORT=true
     volumes:
       - /var/config/tailscale:/var/lib/tailscale
