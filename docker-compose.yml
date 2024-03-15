@@ -81,6 +81,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
+    labels:
+      - autoheal=true
 
 # media server
   jellyfin:
@@ -107,7 +109,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
             
 # torrent client
   qbittorrent:
@@ -133,7 +136,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # movie collection manager
   radarr:
@@ -150,14 +154,15 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:7878 || exit 1
-      start_period: 60s
+      start_period: 90s
       timeout: 10s
       interval: 5s
       retries: 3
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # tv collection manager
   sonarr:
@@ -174,13 +179,14 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8989 || exit 1
-      timeout: 10s
+      timeout: 90s
       interval: 5s
       retries: 3
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # audiobooks collection manager
   readarr:
@@ -204,7 +210,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 #indexer manager
   prowlarr:
@@ -226,7 +233,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # indexer proxy
   flaresolverr:
@@ -244,7 +252,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # IPTV tuner for Plex
   threadfin:
@@ -268,7 +277,8 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # audiobook server
   audiobookshelf:
@@ -284,14 +294,15 @@ services:
       - /var/config/audiobookshelf/metadata:/metadata
     healthcheck:
       test: curl -fsS http://localhost:80 || exit 1
-      start_period: 60s
+      start_period: 120s
       timeout: 10s
       interval: 5s
       retries: 3
     depends_on:
       tailscale:
         condition: service_healthy
-
+    labels:
+      - autoheal=true
 
 # home automation
   homeassistant:
@@ -310,10 +321,23 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fsS http://127.0.0.1:8123 || exit 1
-      start_period: 60s
+      start_period: 120s
       timeout: 10s
       interval: 5s
       retries: 3
     depends_on:
       tailscale:
         condition: service_healthy
+    labels:
+      - autoheal=true
+
+# auto restart containers
+  autoheal:
+    deploy:
+      replicas: 1
+    image: willfarrell/autoheal:latest
+    network_mode: none
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
