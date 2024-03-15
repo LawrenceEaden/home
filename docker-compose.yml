@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "tailscale status"]
-      interval: 1s
+      interval: 5s
       timeout: 5s
       retries: 60
     depends_on:
@@ -97,7 +97,7 @@ services:
     healthcheck:
           test: curl -fsS curl -i http://localhost:8096/health || exit 1
           start_period: 60s
-          timeout: 10s
+          timeout: 60s
           interval: 5s
           retries: 3
             
