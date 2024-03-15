@@ -34,7 +34,7 @@ services:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_HOSTNAME=plexpi
       - TS_ROUTES=192.168.1.0/24
-      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes --ssh --advertise-exit-node
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container --accept-routes --advertise-exit-node
       - TS_Socket=/var/run/tailscale/tailscaled.sock tailscale/tailscale
 #      - TS_NO_LOGS_NO_SUPPORT=true
     volumes:
@@ -78,6 +78,9 @@ services:
     volumes:
       - /var/config:/shares/config
       - /mnt/sdb1/media:/shares/media
+    depends_on:
+      tailscale:
+        condition: service_healthy
 
 # media server
   jellyfin:
@@ -101,6 +104,10 @@ services:
           timeout: 60s
           interval: 5s
           retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
             
 # torrent client
   qbittorrent:
@@ -123,6 +130,10 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # movie collection manager
   radarr:
@@ -143,6 +154,10 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # tv collection manager
   sonarr:
@@ -162,6 +177,10 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # audiobooks collection manager
   readarr:
@@ -182,6 +201,9 @@ services:
       timeout: 20s
       interval: 20s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
 
 
 #indexer manager
@@ -201,6 +223,10 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # indexer proxy
   flaresolverr:
@@ -215,6 +241,10 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # IPTV tuner for Plex
   threadfin:
@@ -235,6 +265,10 @@ services:
       timeout: 10s
       interval: 60s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
+
 
 # audiobook server
   audiobookshelf:
@@ -254,6 +288,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
 
 
 # home automation
@@ -277,3 +314,6 @@ services:
       timeout: 10s
       interval: 5s
       retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
