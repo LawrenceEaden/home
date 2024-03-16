@@ -82,34 +82,6 @@ services:
       tailscale:
         condition: service_healthy
 
-# home automation
-  homeassistant:
-    container_name: homeassistant
-    image: homeassistant/home-assistant:latest
-    network_mode: "service:tailscale" #VPN  
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - /var/config/homeassistant:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-      - /mnt/sdb1/media/:/sdb1/media
-    privileged: true
-    restart: unless-stopped
-    healthcheck:
-      test: curl -fsS http://127.0.0.1:8123 || exit 1
-#      start_period: 120s
-      timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      tailscale:
-        condition: service_healthy
-    labels:
-      - autoheal=true
-
 # media server
   jellyfin:
     container_name: jellyfin
@@ -133,7 +105,7 @@ services:
           interval: 5s
           retries: 60
     depends_on:
-      homeassistant:
+      tailscale:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -332,6 +304,35 @@ services:
         condition: service_healthy
     labels:
       - autoheal=true
+
+# home automation
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/home-assistant:latest
+    network_mode: "service:tailscale" #VPN  
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /var/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+      - /mnt/sdb1/media/:/sdb1/media
+    privileged: true
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://127.0.0.1:8123 || exit 1
+#      start_period: 120s
+      timeout: 5s
+      interval: 5s
+      retries: 60
+    depends_on:
+      audiobookshelf:
+        condition: service_healthy
+    labels:
+      - autoheal=true
+
 
 # auto restart containers
   autoheal:
