@@ -81,6 +81,31 @@ services:
     depends_on:
       tailscale:
         condition: service_healthy
+
+# home automation
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/home-assistant:latest
+    network_mode: "service:tailscale" #VPN  
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /var/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    privileged: true
+    restart: unless-stopped
+    healthcheck:
+      test: curl -fsS http://127.0.0.1:8123 || exit 1
+#      start_period: 120s
+      timeout: 5s
+      interval: 5s
+      retries: 3
+    depends_on:
+      tailscale:
+        condition: service_healthy
     labels:
       - autoheal=true
 
@@ -102,8 +127,8 @@ services:
       - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     healthcheck:
           test: curl -fsS curl -i http://localhost:8096/health || exit 1
-          start_period: 120s
-          timeout: 60s
+#          start_period: 180s
+          timeout: 5s
           interval: 5s
           retries: 3
     depends_on:
@@ -129,12 +154,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8080 || exit 1
-      start_period: 90s
-      timeout: 10s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      jellyfin:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -154,12 +179,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:7878 || exit 1
-      start_period: 90s
-      timeout: 10s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      qbittorrent:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -179,11 +204,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8989 || exit 1
-      timeout: 90s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      radarr:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -203,12 +229,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8787 || exit 1
-      start_period: 90s
-      timeout: 20s
-      interval: 20s
+#      start_period: 120s
+      timeout: 5s
+      interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      sonarr:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -227,11 +253,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:9696 || exit 1
-      timeout: 10s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      readarr:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -246,36 +273,12 @@ services:
     restart: unless-stopped
     healthcheck:
       test: curl -fSs http://localhost:8191 || exit 1
-      timeout: 10s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
-        condition: service_healthy
-    labels:
-      - autoheal=true
-
-# IPTV tuner for Plex
-  threadfin:
-    container_name: threadfin
-    image: fyb3roptik/threadfin:latest
-    network_mode: "service:tailscale" #VPN   
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=etc/utc
-    volumes:
-      - /var/config/threadfin/conf:/home/threadfin/conf
-      - /var/tmp/threadfin:/tmp/threadfin
-    restart: unless-stopped
-    healthcheck:
-      test: curl -fSs http://localhost:34400/web || exit 1
-      start_period: 420s
-      timeout: 10s
-      interval: 60s
-      retries: 3
-    depends_on:
-      tailscale:
+      prowlarr:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -304,39 +307,40 @@ services:
     labels:
       - autoheal=true
 
-# home automation
-  homeassistant:
-    container_name: homeassistant
-    image: homeassistant/home-assistant:latest
-    network_mode: "service:tailscale" #VPN  
+# IPTV tuner for Plex
+  threadfin:
+    container_name: threadfin
+    image: fyb3roptik/threadfin:latest
+    network_mode: "service:tailscale" #VPN   
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=etc/utc
     volumes:
-      - /var/config/homeassistant:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-    privileged: true
+      - /var/config/threadfin/conf:/home/threadfin/conf
+      - /var/tmp/threadfin:/tmp/threadfin
     restart: unless-stopped
     healthcheck:
-      test: curl -fsS http://127.0.0.1:8123 || exit 1
-      start_period: 120s
-      timeout: 10s
+      test: curl -fSs http://localhost:34400/web || exit 1
+      start_period: 420s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      flaresolverr:
         condition: service_healthy
     labels:
       - autoheal=true
 
 # auto restart containers
   autoheal:
+    container_name: autoheal
     deploy:
       replicas: 1
     image: willfarrell/autoheal:latest
     network_mode: none
+    environment:
+      - AUTOHEAL_START_PERIOD=120
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
