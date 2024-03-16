@@ -95,6 +95,7 @@ services:
       - /var/config/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
+      - /mnt/sdb1/media/:/sdb1/media
     privileged: true
     restart: unless-stopped
     healthcheck:
@@ -132,7 +133,7 @@ services:
           interval: 5s
           retries: 3
     depends_on:
-      tailscale:
+      homeassistant:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -297,8 +298,8 @@ services:
       - /var/config/audiobookshelf/metadata:/metadata
     healthcheck:
       test: curl -fsS http://localhost:80 || exit 1
-      start_period: 120s
-      timeout: 10s
+#      start_period: 120s
+      timeout: 5s
       interval: 5s
       retries: 3
     depends_on:
@@ -335,8 +336,8 @@ services:
 # auto restart containers
   autoheal:
     container_name: autoheal
-    deploy:
-      replicas: 1
+#    deploy:
+#      replicas: 1
     image: willfarrell/autoheal:latest
     network_mode: none
     environment:
