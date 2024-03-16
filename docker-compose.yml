@@ -318,7 +318,7 @@ services:
       - /var/config/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
       - /run/dbus:/run/dbus:ro
-      - /mnt/sdb1/media/:/sdb1/media
+      - /mnt/sdb1/media/:/media
     privileged: true
     restart: unless-stopped
     healthcheck:
