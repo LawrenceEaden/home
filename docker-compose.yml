@@ -302,7 +302,7 @@ services:
       interval: 5s
       retries: 3
     depends_on:
-      tailscale:
+      flaresolverr:
         condition: service_healthy
     labels:
       - autoheal=true
@@ -327,7 +327,7 @@ services:
       interval: 5s
       retries: 3
     depends_on:
-      flaresolverr:
+      audiobookshelf:
         condition: service_healthy
     labels:
       - autoheal=true
