@@ -103,7 +103,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       tailscale:
         condition: service_healthy
@@ -131,7 +131,7 @@ services:
 #          start_period: 180s
           timeout: 5s
           interval: 5s
-          retries: 3
+          retries: 60
     depends_on:
       homeassistant:
         condition: service_healthy
@@ -158,7 +158,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       jellyfin:
         condition: service_healthy
@@ -183,7 +183,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       qbittorrent:
         condition: service_healthy
@@ -208,7 +208,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       radarr:
         condition: service_healthy
@@ -233,7 +233,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       sonarr:
         condition: service_healthy
@@ -257,7 +257,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       readarr:
         condition: service_healthy
@@ -277,7 +277,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       prowlarr:
         condition: service_healthy
@@ -301,7 +301,7 @@ services:
 #      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       flaresolverr:
         condition: service_healthy
@@ -326,7 +326,7 @@ services:
       start_period: 420s
       timeout: 5s
       interval: 5s
-      retries: 3
+      retries: 60
     depends_on:
       audiobookshelf:
         condition: service_healthy
@@ -340,8 +340,8 @@ services:
 #      replicas: 1
     image: willfarrell/autoheal:latest
     network_mode: none
-    environment:
-      - AUTOHEAL_START_PERIOD=120
+#    environment:
+#      - AUTOHEAL_START_PERIOD=120
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
