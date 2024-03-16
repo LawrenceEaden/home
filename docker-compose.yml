@@ -20,7 +20,7 @@ services:
       - SERVER_COUNTRIES=UK
       - TZ=Europe/London
       - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
-    restart: unless-stopped
+    restart: always
 
 # reverse proxy
   tailscale:
@@ -44,7 +44,7 @@ services:
       - net_admin
       - net_raw
       - sys_module
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD-SHELL", "tailscale status"]
       interval: 5s
