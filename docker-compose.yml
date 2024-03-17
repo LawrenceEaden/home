@@ -21,8 +21,6 @@ services:
       - TZ=Europe/London
       - FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24
     restart: always
-    labels:
-      - autoheal=true
       
 # reverse proxy
   tailscale:
