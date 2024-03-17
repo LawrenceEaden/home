@@ -48,10 +48,10 @@ services:
       - sys_module
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "tailscale status"]
-      interval: 5s
+      test: ["CMD-SHELL", "tailscale netcheck | grep -q 'IPv4: yes'"]
+      interval: 510s
       timeout: 5s
-      retries: 60
+      retries: 1
     depends_on:
       gluetun:
         condition: service_healthy
@@ -82,9 +82,6 @@ services:
     volumes:
       - /var/config:/shares/config
       - /mnt/sdb1/media:/shares/media
-    depends_on:
-      tailscale:
-        condition: service_healthy
     labels:
       - autoheal=true
       
@@ -105,14 +102,11 @@ services:
       - /mnt/sdb1/media/dvr:/dvr
       - /var/config/threadfin/conf/data:/xml #XMLTV from Xteve
     healthcheck:
-          test: curl -fsS curl -i http://localhost:8096/health || exit 1
-#          start_period: 180s
+          test: curl -fsS curl -i http://localhost:8096/health
+          start_period: 180s
           timeout: 5s
-          interval: 5s
-          retries: 60
-    depends_on:
-      tailscale:
-        condition: service_healthy
+          interval: 10s
+          retries: 1
     labels:
       - autoheal=true
             
@@ -132,14 +126,11 @@ services:
       - /mnt/sdb1/downloads:/sdb1/downloads
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:8080 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:8080
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      jellyfin:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -157,14 +148,11 @@ services:
       - /mnt/sdb1:/sdb1 
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:7878 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:7878
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      qbittorrent:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -182,14 +170,11 @@ services:
       - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:8989 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:8989
+      start_period: 120s
       timeout: 5s
       interval: 5s
-      retries: 60
-    depends_on:
-      radarr:
-        condition: service_healthy
+      retries: 1
     labels:
       - autoheal=true
 
@@ -207,14 +192,11 @@ services:
       - /mnt/sdb1:/sdb1
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:8787 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:8787
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      sonarr:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -231,14 +213,11 @@ services:
       - /var/config/prowlarr:/config
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:9696 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:9696
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      readarr:
-        condition: service_healthy
+      interval:  10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -251,14 +230,11 @@ services:
       - LOG_LEVEL=info
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:8191 || exit 1
-#      start_period: 120s
+      test: curl -fSs http://localhost:8191
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      prowlarr:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -267,22 +243,17 @@ services:
     container_name: audiobookshelf    
     image: ghcr.io/advplyr/audiobookshelf:latest
     network_mode: "service:tailscale" #VPN  
-    #ports:
-    #  - 13378:80
     volumes:
       - /mnt/sdb1/media/audiobooks:/audiobooks
       - /mnt/sdb1/media/podcasts:/podcasts
       - /var/config/audiobookshelf:/config
       - /var/config/audiobookshelf/metadata:/metadata
     healthcheck:
-      test: curl -fsS http://localhost:80 || exit 1
-#      start_period: 120s
+      test: curl -fsS http://localhost:80
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      flaresolverr:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -300,14 +271,11 @@ services:
       - /var/tmp/threadfin:/tmp/threadfin
     restart: unless-stopped
     healthcheck:
-      test: curl -fSs http://localhost:34400/web || exit 1
+      test: curl -fSs http://localhost:34400/web
       start_period: 420s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      audiobookshelf:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -328,14 +296,11 @@ services:
     privileged: true
     restart: unless-stopped
     healthcheck:
-      test: curl -fsS http://127.0.0.1:8123 || exit 1
-#      start_period: 120s
+      test: curl -fsS http://127.0.0.1:8123
+      start_period: 120s
       timeout: 5s
-      interval: 5s
-      retries: 60
-    depends_on:
-      audiobookshelf:
-        condition: service_healthy
+      interval: 10s
+      retries: 1
     labels:
       - autoheal=true
 
@@ -343,12 +308,12 @@ services:
 # auto restart containers
   autoheal:
     container_name: autoheal
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     image: willfarrell/autoheal:latest
     network_mode: none
-#    environment:
-#      - AUTOHEAL_START_PERIOD=120
+    environment:
+      - AUTOHEAL_START_PERIOD=300
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
