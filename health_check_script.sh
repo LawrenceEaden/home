@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 # Function to check Mullvad connection status
 check_mullvad_status() {
     # Check Mullvad connection status
-    mullvad_response=$(curl -sS https://am.i.mullvad.net/connected)
-    if [[ "$mullvad_response" == *"You are connected to Mullvad"* ]]; then
+    mullvad_response=$(curl -sS -m 5 https://am.i.mullvad.net/connected)
+    echo "$mullvad_response" | grep -q "You are connected to Mullvad"
+    if [ $? -eq 0 ]; then
         echo "Mullvad ✅"
         return 0  # Exit code 0 for success
     else
@@ -17,8 +18,9 @@ check_mullvad_status() {
 check_localhost_port() {
     # Check if localhost service port is reachable
     port=$1
-    localhost_response=$(curl -IsS http://localhost:$port)
-    if [[ "$localhost_response" == *"HTTP"*"200"* ]]; then
+    localhost_response=$(curl -IsS -m 5 "http://localhost:${port}")
+    echo "$localhost_response" | grep -q "HTTP.*200"
+    if [ $? -eq 0 ]; then
         echo "localhost:$port ✅"
         return 0  # Exit code 0 for success
     else
@@ -29,13 +31,26 @@ check_localhost_port() {
 
 # Function to check Tailscale connection status
 check_tailscale_status() {
-    # Check Tailscale connection status
-    tailscale_response=$(curl -IsS http://100.100.100.100)
-    if [[ "$tailscale_response" == *"HTTP"*"200"* ]]; then
-        echo "Tailscale ✅"
-        return 0  # Exit code 0 for success
+    # Check Tailscale connection status with a timeout of 5 seconds
+    tailscale_response=$(curl -IsS -m 5 http://100.100.100.100 2>&1)  # Redirect stderr to stdout
+    exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
+        # Successful curl command (even if HTTP response is not 200 OK)
+        if echo "$tailscale_response" | grep -q "HTTP.*200"; then
+            echo "Tailscale ✅"
+            return 0  # Exit code 0 for success
+        else
+            echo "Tailscale ❌ (HTTP Status not 200)"
+            return 1  # Exit code 1 for failure
+        fi
+    elif [ $exit_code -eq 28 ]; then
+        # Timeout occurred
+        echo "Tailscale ❌ (Connection timed out)"
+        return 1  # Exit code 1 for failure
     else
-        echo "Tailscale ❌"
+        # Other curl errors
+        echo "Tailscale ❌ (Curl Error: $exit_code)"
         return 1  # Exit code 1 for failure
     fi
 }
@@ -65,4 +80,3 @@ if [ $mullvad_status -eq 0 ] && [ $localhost_status -eq 0 ] && [ $tailscale_stat
 else
   exit 1  # Exit with failure status code
 fi
-
