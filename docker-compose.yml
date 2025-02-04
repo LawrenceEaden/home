@@ -1,20 +1,45 @@
-version: '2.1'
+
 services:
+
+#VPN - AirVPN
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8080:8080 #qbittorrent WebUI
+      - 51844:51844 #qbittorrent torrent
+      - 51844:51844/udp #qbittorrent torrent
+#      - 8191:8191 #Flaresolverr
+#      - 9696:9696 #Prowlarr
+    volumes:
+      - /var/config/gluetun:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=airvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=+Jf3lCAsc5rreHIdizpRmuiKlS94EDgqGfVf6EtvTHo=
+      - WIREGUARD_ADDRESSES=10.148.162.13/32
+      - WIREGUARD_PUBLIC_KEY=PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk=
+      - WIREGUARD_PRESHARED_KEY=IyopkCW/4C9jewOuW45i6bb4qB1ajmLJbkFtMkVRJ78=
+      - WIREGUARD_PERSISTENT_KEEPALIVE=15
+      - SERVER_COUNTRIES=United Kingdom
+      - FIREWALL_VPN_INPUT_PORTS=51844
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped
    
 # torrent client
   qbittorrent:
     image: linuxserver/qbittorrent:latest   
-    network_mode: host
+    network_mode: service:gluetun
     container_name: qbittorrent
-    ports:
-      - 8080:8080
-      - 6881:6881
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
       - WEBUI_PORT=8080
-      - TORRENTING_PORT=6881
+      - TORRENTING_PORT=51844
     volumes:
       - /var/config/qbittorrent:/config
       - /mnt/data/downloads:/data/downloads
@@ -22,11 +47,41 @@ services:
       - /tmp/torrents:/tmp
     restart: unless-stopped
 
+#Qbit Manager Script
+  qbit_manage:
+    container_name: qbit_manage
+    image: ghcr.io/stuffanthings/qbit_manage:latest
+    volumes:
+      - /var/config/qbit_manage/:/config:rw
+      - /mnt/data/downloads:/data/downloads
+      - /tmp/torrents/:/data/torrents:rw
+      - /var/config/qbittorrent/:/qbittorrent/:ro
+    environment:
+      - QBT_RUN=true
+      - QBT_SCHEDULE=1440
+      - QBT_CONFIG=config.yml
+      - QBT_LOGFILE=activity.log
+      - QBT_CROSS_SEED=false
+      - QBT_RECHECK=true
+      - QBT_CAT_UPDATE=false
+      - QBT_TAG_UPDATE=false
+      - QBT_REM_UNREGISTERED=false
+      - QBT_REM_ORPHANED=true
+      - QBT_TAG_TRACKER_ERROR=false
+      - QBT_TAG_NOHARDLINKS=true
+      - QBT_SHARE_LIMITS=false
+      - QBT_SKIP_CLEANUP=false
+      - QBT_DRY_RUN=true
+      - QBT_LOG_LEVEL=INFO
+      - QBT_DIVIDER==
+      - QBT_WIDTH=100
+    restart: on-failure:2
+
 # movie collection manager
   radarr:
     container_name: radarr
     image: linuxserver/radarr:latest 
-    network_mode: host
+#    network_mode: host
     ports:
       - 7878:7878
     environment:
@@ -39,11 +94,24 @@ services:
       - /var/config/scripts:/scripts
     restart: unless-stopped
 
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Asia/Tashkent
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - /var/config/jellyseerr:/app/config
+    restart: unless-stopped
+
 # tv collection manager
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:latest 
-    network_mode: host
+#    network_mode: host
     ports:
       - 8989:8989    
     environment:
@@ -56,11 +124,28 @@ services:
       - /var/config/scripts:/scripts
     restart: unless-stopped
 
+# subtitles manager
+  bazarr:
+      image: lscr.io/linuxserver/bazarr:latest
+      container_name: bazarr
+#      network_mode: host
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Etc/UTC
+      volumes:
+        - /path/to/bazarr/config:/config
+        - /mnt/data:/data
+#        - /path/to/movies:/movies #optional
+#        - /path/to/tv:/tv #optional
+      ports:
+        - 6767:6767
+      restart: unless-stopped
+      
 # audiobooks collection manager
   readarr:
     container_name: readarr
     image: linuxserver/readarr:nightly   
-    network_mode: host
     ports:
       - 8787:8787
     environment:
@@ -77,7 +162,6 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
-    network_mode: host
     ports:
       - 9696:9696
     environment:
@@ -91,9 +175,8 @@ services:
 
 # indexer proxy
   flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: 21hsmw/flaresolverr:nodriver
     container_name: flaresolverr
-    network_mode: host
     ports:
       - 8191:8191
     environment:
@@ -102,28 +185,12 @@ services:
       - /var/config/scripts:/scripts
     restart: unless-stopped
 
-# audiobook server
-  audiobookshelf:
-    container_name: audiobookshelf    
-    image: ghcr.io/advplyr/audiobookshelf:latest
-    network_mode: host
-    ports:
-      - 80:80
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - /mnt/data/media/audiobooks:/audiobooks
-      - /mnt/data/media/podcasts:/podcasts
-      - /var/config/audiobookshelf:/config
-      - /var/config/audiobookshelf/metadata:/metadata
-      - /var/config/scripts:/scripts
+
 
 # IPTV tuner for Plex
   threadfin:
     container_name: threadfin
     image: fyb3roptik/threadfin:latest
-    network_mode: host
     ports:
       - 34400:34400  
     environment:
@@ -132,7 +199,7 @@ services:
       - TZ=etc/utc
     volumes:
       - /var/config/threadfin/conf:/home/threadfin/conf
-      - /var/tmp/threadfin:/tmp/threadfin
+      - /var/config/threadfin/tmp:/tmp/threadfin
       - /var/config/scripts:/scripts
     restart: unless-stopped
 
@@ -147,16 +214,54 @@ services:
       ACCOUNT_Lawrence: spicysamba1234
       UID_Lawrence: 1000
       SAMBA_VOLUME_CONFIG_config: |
-        [shares]
-         path = /shares
-         guest ok = yes
+        [data]
+         path = /data
+         guest ok = no
          browseable = yes
          available = yes
          writable = yes
-         public = yes
+         public = no
          read only = no
          create mask = 666
          directory mask = 777
-    volumes:
-        - /mnt/data:/shares
 
+        [config]
+         path = /config
+         guest ok = no
+         browseable = yes
+         available = yes
+         writable = yes
+         public = no
+         read only = no
+         create mask = 666
+         directory mask = 777        
+    volumes:
+        - /mnt/data:/data
+        - /var/config:/config
+    restart: unless-stopped
+
+  watchtower:
+    container_name: watchtower
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+
+
+#Ad Blocking DNS
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 784:784/udp
+      - 853:853/tcp
+      - 3000:3000/tcp
+      - 80:80/tcp
+      - 443:443/tcp
+    volumes:
+      - /var/config/adguard/work:/opt/adguardhome/work
+      - /var/config/adguard/conf:/opt/adguardhome/conf
+    restart: unless-stopped
