@@ -1,24 +1,9 @@
-Home Raspberry Pi Plex Server
+# ARCHIVED — superseded by LawrenceEaden/homelab
 
-Equipment
-1. Raspberry Pi 4 - 4gb ram minimum
-2. Desk Pi Case (You can choose another case, but this works well for holding a 2.5in SSD
-3. 2.5in SSD - OS + Storage
-4. USB to Sata cable
-5. ethernet cable
+This was an early "Raspberry Pi Plex server" setup with a couple of Docker compose files. **No longer maintained as of 2026-05-20.**
 
-Process
+It's been replaced by a single Beelink-based homelab running Proxmox with separate LXCs for each service. The current home for everything is the private repo **`LawrenceEaden/homelab`** — Docker compose files for the media stack live there at `lxc/100-media/stacks/`, with the same components (Portainer, Samba, *arr suite, Jellyfin, etc.) but better organised and with full per-service documentation, secrets handling, and operational runbooks.
 
-1. Use the Raspberry Pi Imager to install the saved image
-This has preinstalled software on it
-  SSH
-  Portainer
-  SambaNAS
+If you arrived here looking for a specific compose snippet or convention, the new repo is private but the patterns are documented through the open-source-strategy referenced in its READMEs.
 
-
-
-
-
-
-
-Default Logins
+Keeping this repo around as a read-only archive because some external links still point at it. Do not fork — it is years out of date.
